@@ -42,7 +42,7 @@ def visualClusterResult(data, labels, title, show=False):
     else:
         plt.scatter(Y[:, 0], Y[:, 1], s=20, c=labels) #marker='s',marker='+' edgecolor='black'
         
-    plt.savefig('./images/'+title+'.png')
+    plt.savefig('../images/'+title+'.png')
     if show:
         plt.show()
 

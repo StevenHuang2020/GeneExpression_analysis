@@ -9,11 +9,10 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler,MinMaxScaler
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 
-from modelCreate import createKMeans,createAgglomerate,createDBSCAN
-from modelCreate import calculateSSE,calculateDaviesBouldin
-from visualClustering import visualClusterResult,plotSilhouetteValues
-from genPetData import getCsv
-from plotApplication import plotModelCSM,plotCLusteringResult
+from modelClusteringCreate import *
+from visualClustering import visualClusterResult
+
+from geoClassifier import preDataSet_GSE25097
 
 def getModelMeasureByModel(data,model):
     return getModelMeasure(data,model.labels_)
@@ -112,21 +111,6 @@ def getBestkFromCSM(datasetName,modelName,df):
     bestK = x[index][0]
     print('index,bestK=',index,bestK)
     return index,bestK
-    
-def prepareDataSet():
-    if 0:
-        df = getCsv('./db/petIotRecordsAll.csv')
-        df = df.loc[:,['latitude','longitude']]
-        #df = df[:100]
-    else:
-        df = getCsv('./db/statistic_result.csv')
-        df = df.loc[:,['latitude_center','longitude_center']]
-    
-    return df
-
-#cluster: 0 latitude: -36.8542531 longitude 174.76641334
-#cluster: 1 latitude: -36.85011364 longitude 174.76240119
-#cluster: 2 latitude: -36.84837064 longitude 174.74868692
 
 def getCulteredCentroid(rawData, labels):
     cluster_labels = np.unique(labels)
@@ -153,11 +137,11 @@ def getCulteredCentroid(rawData, labels):
         centroids.append([latitudeCenter,longitudeCenter])
     return centroids
       
-#centroids= [[-36.8542531, 174.76641334], [-36.85011364, 174.76240119], [-36.84837064, 174.74868692]]  
-def train(rawData): 
-    data = preprocessingData(rawData)
-    
-    model = createKMeans(3)
+def train(): 
+    data,labels = preDataSet_GSE25097()
+       
+    model = createKMeans(4)
+    modelName = 'K-Means'
     t = time()
     model.fit(data)
     
@@ -168,15 +152,14 @@ def train(rawData):
     #visualClusterResult(data,model.labels_,k,'KMeans_K_'+str(k))
     #plotSilhouetteValues('','KMeans',k, data, model.labels_)
     #print('cluster_labels=',np.unique(model.labels_))
-    centroids = getCulteredCentroid(rawData,model.labels_)
-    print('centroids=',centroids)
+    #centroids = getCulteredCentroid(data,model.labels_)
+    #print('centroids=',centroids)
     
-    plotCLusteringResult(rawData,model.labels_)
+    visualClusterResult(data,model.labels_,modelName)
+
     
 def main():
-    rawData = prepareDataSet()
-    #trainModel('petGPSLocation',rawData)
-    train(rawData)
+    train()
     
 if __name__ == "__main__":
     main()

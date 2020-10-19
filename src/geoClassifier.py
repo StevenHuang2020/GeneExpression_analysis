@@ -6,6 +6,8 @@ from time import time
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler,MinMaxScaler
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
+import seaborn as sn
 
 from genDataSet import writeToCsv
 from getDataSet import getGeoData,splitData,descrpitDf
@@ -34,7 +36,7 @@ def preprocessingData(data):
     return data
     
 def preDataSet_GSE114783():
-    file = r'.\data\GSE114783\GSE114783.csv'
+    file = r'..\data\GSE114783\GSE114783.csv'
     df = getGeoData(file).T
     descrpitDf(df)
     
@@ -64,8 +66,47 @@ def preDataSet_GSE114783():
     X = preprocessingData(X) #scaler
     return splitData(X, y, test=0.2)
 
+def statisticData(labels,df):
+    def autolabel(ax,rects):
+        """Attach a text label above each bar in *rects*, displaying its height."""
+        for rect in rects:
+            height = rect.get_height().round(2)
+            ax.annotate('{}'.format(height),
+                        xy=(rect.get_x() + rect.get_width() / 2, height),
+                        xytext=(0, 1),  # 3 points vertical offset
+                        textcoords="offset points",
+                        ha='center', va='bottom')
+        
+    stat = {}
+    for i in labels:
+        da = df[df['Type'] == i]
+        print(i, da.shape)
+        stat[i] = [da.shape[0]]
+       
+    print('stat=',stat) 
+    dfStat = pd.DataFrame.from_dict(stat)
+    print('dfStat=\n',dfStat)
+    '''start plot'''
+    fontsize = 8
+    title = 'GSE25097 sample statistics'
+    # ax = dfStat.plot(kind='bar',y=None)
+    # ax.set_title(title,fontsize=fontsize)
+    # ax.legend(fontsize=fontsize)
+    # plt.setp(ax.get_xticklabels(), rotation=30, ha="right",fontsize=fontsize)
+    # plt.setp(ax.get_yticklabels(),fontsize=fontsize)
+    # #plt.subplots_adjust(left=0.30, bottom=None, right=0.98, top=None, wspace=None, hspace=None)   
+    # #plt.savefig(str(i+1)+'.png')
+    # plt.show()
+    plt.rcParams.update({'font.size': fontsize})
+    ax = plt.subplot(1,1,1)
+    ax.set_title('',fontsize=fontsize)
+    rect = ax.bar(dfStat.columns, dfStat.iloc[0,:])
+    autolabel(ax,rect)
+    plt.ylabel('Numbers')
+    plt.show()
+    
 def preDataSet_GSE25097():
-    file = r'.\data\GSE25097\GSE25097.csv'
+    file = r'..\data\GSE25097\GSE25097.csv'
     df = getGeoData(file).T
     descrpitDf(df)
     
@@ -73,7 +114,11 @@ def preDataSet_GSE25097():
     df = df[1:]
 
     print('Before:\n', df.head())
-    print('Class labels:', np.unique(df['Type']))
+    labels = np.unique(df['Type'])
+    
+    #statisticData(labels,df)
+        
+    print('Class labels:',labels)
     class_mapping = {
         'healthy':          1,
         'cirrhotic':        2,
@@ -86,24 +131,20 @@ def preDataSet_GSE25097():
     if 0:
         N=500
         name = 'GSE114783ok_'+str(N)+'.txt'
-        writeToCsv(df.iloc[:, -1*N:], r'.\data\GSE114783' + '\\' + name, sep=' ', index=None, header=None)
+        writeToCsv(df.iloc[:, -1*N:], r'..\data\GSE114783' + '\\' + name, sep=' ', index=None, header=None)
 
-    X, y = df.iloc[:, 1:-1].values, df.iloc[:, -1].values
-    
-    X = pcaData(X,N=30) #PCA
-    X = preprocessingData(X)
-    return splitData(X, y, test=0.2)
+    return df
     
 def createModels():
     models = []
     
     models.append(createDecisionTree(3))
-    models.append(createMLPClassifier())
+    #models.append(createMLPClassifier())
     models.append(createRandomForestClf())
     #models.append(createLogisticRegression())
-    models.append(createRidgeClassifier())
-    models.append(createSGDClassifier())
-    models.append(createSVM_svc())
+    #models.append(createRidgeClassifier())
+    #models.append(createSGDClassifier())
+    #models.append(createSVM_svc())
     #models.append(createSVM_NuSVC())
     models.append(createSVM_LinearSVC())
     models.append(createKNeighborsClassifier())
@@ -120,9 +161,45 @@ def createModels():
     #print(models)
     return models
 
-def train(): 
-    X_train, X_test, y_train, y_test = preDataSet_GSE25097() #preDataSet_GSE114783()
+def confusionMatrix(clf,predictions, targets):
+    def plotConfusionMatrix(matrix, classes=['1','2','3','4']):
+        df_cm = pd.DataFrame(matrix, index=classes, columns=classes)
+        #fig = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
+        
+        plt.figure(figsize=(5, 4))
+        sn.set(font_scale=1)  # for label size
+        #sn.set_style('whitegrid')
+        #sn.set_style("ticks", {"xtick.major.size": 8, "ytick.major.size": 8})
+        cmap = sn.cubehelix_palette(light=1, as_cmap=True) #plt.cm.Greys plt.cm.Blues
+        sn.heatmap(df_cm, annot=True, linecolor='k', linewidths='.2', cmap=cmap, fmt='.20g', annot_kws={"size": 8})  # font size 
+        plt.show()
+    
+    print("*"*60, confusionMatrix.__name__)
+    results = confusion_matrix(targets, predictions)
+    print('Confusion Matrix :')
+    print(clf.classes_)
+    print(results)
+    print('Accuracy Score :', accuracy_score(targets, predictions))
+    #print('Report : ')
+    #print(classification_report(targets, predictions))
+    plotConfusionMatrix(results)
 
+
+def train(): 
+    if 1:
+        df = preDataSet_GSE25097() #preDataSet_GSE114783()
+        
+        X, y = df.iloc[:, 1:-1].values, df.iloc[:, -1].values
+    
+        X = pcaData(X,N=30) #PCA
+        X = preprocessingData(X) #scaler
+    else:
+        N=850
+        X = np.random.random((N,10))
+        y = np.random.randint(1,5, size=N)
+    
+    X_train, X_test, y_train, y_test = splitData(X, y, test=0.2)
+    
     models = createModels()
 
     print('\n----------------training start--------------')
@@ -142,9 +219,10 @@ def train():
             print(modelName,', failed!')
             continue
         
+        confusionMatrix(model, model.predict(X), y)
         #visualization
-        visualClusterResult(X_train,pred_train,modelName)
-        #break    
+        #visualClusterResult(X_train,pred_train,modelName)
+        break    
     
     print('----------------training end--------------\n')
     # print("\n run in %.2fs" % (tt))
