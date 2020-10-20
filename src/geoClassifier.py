@@ -13,9 +13,11 @@ from genDataSet import writeToCsv
 from getDataSet import getGeoData,splitData,descrpitDf
 from modelClassifierCreate import *
 from visualClustering import visualClusterResult
+from featureSelection import *
 
-def pcaData(data,N=100):
+def pcaData(data, y, N=100):
     print('pca before, data shape=',data.shape)
+    N = min(N,data.shape[0])
     fit = PCA(n_components=N).fit(data)
     print('n_components_:',fit.n_components_)
     print('n_features_:',fit.n_features_)
@@ -25,7 +27,7 @@ def pcaData(data,N=100):
     
     data = fit.transform(data)
     print('pca after, data shape=',data.shape)
-    return data
+    return data,y
 
 def preprocessingData(data):
     scaler = MinMaxScaler()# StandardScaler() #
@@ -35,6 +37,12 @@ def preprocessingData(data):
     #print('scaler=',data[:5])
     return data
     
+def featureSelect(X,y,N=30):
+    #return FeatureExtractChiSquare(X,y,N=N)
+    return FeatureExtract_RFE(X,y,N=N)
+    # return FeatureExtract_ETC(X,y,N=N)
+    #return pcaData(X,y,N=N)
+
 def preDataSet_GSE114783():
     file = r'..\data\GSE114783\GSE114783.csv'
     df = getGeoData(file).T
@@ -62,7 +70,7 @@ def preDataSet_GSE114783():
 
     X, y = df.iloc[:, 1:-1].values, df.iloc[:, -1].values
     
-    X = pcaData(X,N=30)
+    X, y = pcaData(X,y,N=30)
     X = preprocessingData(X) #scaler
     return splitData(X, y, test=0.2)
 
@@ -105,7 +113,25 @@ def statisticData(labels,df):
     plt.ylabel('Numbers')
     plt.show()
     
-def preDataSet_GSE25097():
+def filterData(labels, df, selectDict):
+    dataDict = {}
+    for i in labels:
+        dataDict[i] = df[df['Type'] == i]
+    
+    # for i in  dataDict:
+    #     print(i, dataDict[i].shape)
+    
+    selRes = pd.DataFrame()
+    for i in selectDict:
+        n  = selectDict[i]
+        #print(i,n)
+        sel = dataDict[i][:n]
+        selRes = pd.concat([selRes,sel])
+    print('selRes.shape=',selRes.shape)
+    #print(selRes)
+    return selRes
+    
+def preDataSet_GSE25097(filter=False):
     file = r'..\data\GSE25097\GSE25097.csv'
     df = getGeoData(file).T
     descrpitDf(df)
@@ -117,13 +143,16 @@ def preDataSet_GSE25097():
     labels = np.unique(df['Type'])
     
     #statisticData(labels,df)
-        
+    if filter:
+        selectDict={ 'healthy':6, 'cirrhotic':15, 'non_tumor':15, 'tumor':15}
+        df = filterData(labels,df,selectDict)
+    
     print('Class labels:',labels)
     class_mapping = {
-        'healthy':          1,
-        'cirrhotic':        2,
-        'non_tumor':        3,
-        'tumor':            4,
+        'healthy':          1,  #6
+        'cirrhotic':        2,  #40
+        'non_tumor':        3,  #243
+        'tumor':            4,  #268
     }
     df['Type'] = df['Type'].map(class_mapping)
     print('After:\n', df.head())
@@ -190,8 +219,8 @@ def train():
         df = preDataSet_GSE25097() #preDataSet_GSE114783()
         
         X, y = df.iloc[:, 1:-1].values, df.iloc[:, -1].values
-    
-        X = pcaData(X,N=30) #PCA
+        #X = pcaData(X,N=30) #PCA
+        X,y = featureSelect(X,y,N=30)
         X = preprocessingData(X) #scaler
     else:
         N=850
@@ -220,9 +249,10 @@ def train():
             continue
         
         confusionMatrix(model, model.predict(X), y)
+        print('\n')
         #visualization
         #visualClusterResult(X_train,pred_train,modelName)
-        break    
+        #break 
     
     print('----------------training end--------------\n')
     # print("\n run in %.2fs" % (tt))

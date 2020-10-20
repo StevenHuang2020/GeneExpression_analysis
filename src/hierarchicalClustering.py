@@ -32,12 +32,15 @@ def plotHierarchical(data,labels,title='Hierarchical Clustering Dendrogram'):
     model = AgglomerativeClustering(distance_threshold=0, n_clusters=None)
     
     model = model.fit(data)
+    
+    plt.rcParams.update({'font.size': 7})
     plt.title(title)
     # plot the top three levels of the dendrogram
     #labels=[['a','a','b','b'],['c','c','d','d']]
     plot_dendrogram(model,labels,  leaf_rotation=90., leaf_font_size=8, ) #truncate_mode='level', p=3, show_contracted=True
     #plt.xlabel("Number of points in node (or index of point if no parenthesis).")
-    plt.ylabel('distance')
+    #plt.ylabel('distance')
+    plt.subplots_adjust(top=0.94, bottom=0.23, left=None, right=None, wspace=None, hspace=None)   
     plt.show()
     
 def main():
@@ -54,9 +57,9 @@ def main():
                     [10,12,14],
                     ]) #[20,12,11,14,10], [21,22,14,23,22], [100,130,120,120,200]
     else:
-        df = preDataSet_GSE25097()
+        df = preDataSet_GSE25097() #True
     
-        if 1:
+        if 0:
             front=12
             X, y = df.iloc[:front, 1:-1].values, df.iloc[:front, -1].values
             labels = df.iloc[:front,0].values
@@ -64,12 +67,12 @@ def main():
             X, y = df.iloc[:, 1:-1].values, df.iloc[:, -1].values
             labels = df.iloc[:,0].values
             
-        X = pcaData(X,N=30) #PCA
+        X = pcaData(X,N=min(30, X.shape[0])) #PCA
         X = preprocessingData(X) #scaler
 
         
     print('labels=',labels)
-    plotHierarchical(X,labels)
+    plotHierarchical(X,labels,title='')
     
     
 if __name__=='__main__':
