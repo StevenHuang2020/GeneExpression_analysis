@@ -32,7 +32,7 @@ def FeatureExtract_RFE(X,Y,N=3):
     t = time()
     #estimator = SVR(kernel="linear")
     estimator = SVC(kernel="linear", C=1)
-    rfe = RFE(estimator, n_features_to_select=N, step=1)
+    rfe = RFE(estimator, n_features_to_select=N, step=0.1)
 
     fit = rfe.fit(X, Y)
     features = fit.transform(X)
@@ -44,7 +44,7 @@ def FeatureExtract_RFE(X,Y,N=3):
     print("Feature Ranking: %s" % (fit.ranking_))
     #print(fit.support_)
     print("run in %.2fs" % (tt), ' after FRE features.shape = ',features.shape)
-    return features, Y
+    return features, Y, fit.support_
 
 def FeatureExtract_PCA(X,Y,N=3):
     print("*" * 50, FeatureExtract_PCA.__name__)

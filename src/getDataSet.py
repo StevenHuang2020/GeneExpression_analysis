@@ -15,11 +15,12 @@ def readCsv(file,header=None,sep=','):
     return pd.read_csv(file,header=header, sep=sep)
 
 def descrpitDf(df):
-    print('describe:', df.describe().transpose())
-    print('head:', df.head())
-    print('dtypes:', df.dtypes)
-    print('columns:', df.columns)
-    print('shape:', df.shape)
+    print('describe:\n', df.describe().transpose())
+    print('head:\n', df.head())
+    print('dtypes:\n', df.dtypes)
+    print('columns:\n', df.columns)
+    print('indexs:\n', df.index)
+    print('shape:\n', df.shape)
     #print('Class labels', np.unique(df['Class label']))
     
 def getGeoData(file):

@@ -48,8 +48,15 @@ def preDataSet_GSE114783():
     df = getGeoData(file).T
     descrpitDf(df)
     
+    #df.columns = df.iloc[0]
+    #df = df[1:]
+    #df.rename(columns=df.iloc[0], inplace = True)
+    #df.drop(df.index[0], inplace = True)
+    #eaders = df.iloc[0]
+    #df  = pd.DataFrame(df.values[1:], columns=headers)
     df.columns = df.iloc[0]
-    df = df[1:]
+    df = df.reindex(df.index.drop(0)).reset_index(drop=True)
+    df.columns.name = None
 
     print('Before:\n', df.head())
     print('Class labels:', np.unique(df['Type']))
@@ -68,11 +75,12 @@ def preDataSet_GSE114783():
         name = 'GSE114783ok_'+str(N)+'.txt'
         writeToCsv(df.iloc[:, -1*N:], r'.\data\GSE114783' + '\\' + name, sep=' ', index=None, header=None)
 
-    X, y = df.iloc[:, 1:-1].values, df.iloc[:, -1].values
+    return df
+    # X, y = df.iloc[:, 1:-1].values, df.iloc[:, -1].values
     
-    X, y = pcaData(X,y,N=30)
-    X = preprocessingData(X) #scaler
-    return splitData(X, y, test=0.2)
+    # X, y = pcaData(X,y,N=30)
+    # X = preprocessingData(X) #scaler
+    # return splitData(X, y, test=0.2)
 
 def statisticData(labels,df):
     def autolabel(ax,rects):
@@ -135,16 +143,17 @@ def preDataSet_GSE25097(filter=False):
     file = r'..\data\GSE25097\GSE25097.csv'
     df = getGeoData(file).T
     descrpitDf(df)
-    
+
     df.columns = df.iloc[0]
-    df = df[1:]
+    df = df.reindex(df.index.drop(0)).reset_index(drop=True)
+    df.columns.name = None
 
     print('Before:\n', df.head())
     labels = np.unique(df['Type'])
     
     #statisticData(labels,df)
     if filter:
-        selectDict={ 'healthy':6, 'cirrhotic':15, 'non_tumor':15, 'tumor':15}
+        selectDict={ 'healthy':6, 'cirrhotic':6, 'non_tumor':6, 'tumor':6}
         df = filterData(labels,df,selectDict)
     
     print('Class labels:',labels)
@@ -228,7 +237,7 @@ def train():
         y = np.random.randint(1,5, size=N)
     
     X_train, X_test, y_train, y_test = splitData(X, y, test=0.2)
-    
+
     models = createModels()
 
     print('\n----------------training start--------------')
