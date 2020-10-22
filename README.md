@@ -1,7 +1,7 @@
 # GeneExpression_analysis ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg) ![Python Version](https://img.shields.io/badge/python-v3-blue)
 pip install -r requirements.txt <br/>
 [NCBI Geo](https://www.ncbi.nlm.nih.gov/gds/) (Gene Expression data) analysis, classification&visualization. <br/>
-visualization lib: [bioinfokit.](https://pypi.org/project/bioinfokit/)
+Visualization lib: [bioinfokit.](https://pypi.org/project/bioinfokit/)
 
 ## Classification
 By using machine learning models（DecisionTreeClassifier,RandomForestClassifier,SVM,...) from [scikit-learn](https://scikit-learn.org/).
