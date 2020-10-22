@@ -11,7 +11,7 @@ By using machine learning models（DecisionTreeClassifier,RandomForestClassifier
 ## Clustering
 <img src="images/LinearSVC_TSNE.png" width="320" height="256" />
 
-## Gene Express Level
+## Gene Expression Level
 |||
 |---|---|
 |<img src="images/heatmap/All36.png" width="300" height="300" />|<img src="images/heatmap/All36_T.png" width="300" height="300" />|
