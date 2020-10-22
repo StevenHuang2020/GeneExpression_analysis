@@ -1,9 +1,9 @@
 # GeneExpression_analysis ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg) ![Python Version](https://img.shields.io/badge/python-v3-blue)
 pip install -r requirements.txt <br/>
-Gene Expression analysis, classification
+NCBI Geo (Gene Expression data) analysis, classification&visualization .
 
 ## Classification
-Accuracy=0.99
+By using machine learning models（DecisionTreeClassifier,RandomForestClassifier,SVM,...) from scikit-learn.
   
 <img src="images/SVM_PCA100.png" width="320" height="256" />
 
