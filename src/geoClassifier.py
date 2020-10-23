@@ -130,10 +130,9 @@ def filterData(labels, df, selectDict):
     #     print(i, dataDict[i].shape)
     
     selRes = pd.DataFrame()
-    for i in selectDict:
-        n  = selectDict[i]
-        #print(i,n)
-        sel = dataDict[i][:n]
+    for key,value in selectDict.items():
+        #print(key,value)
+        sel = dataDict[key][:value]
         selRes = pd.concat([selRes,sel])
     print('selRes.shape=',selRes.shape)
     #print(selRes)
