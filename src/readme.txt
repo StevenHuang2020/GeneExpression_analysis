@@ -2,10 +2,10 @@
 1)genDataSet.py
 Proprececing the dataset to a CSV file.
 
-1.Classifier Task
+2.Classifier Task
 geoClassifier.py
 
-2.Gene expression visualization Task
+3.Gene expression visualization Task
 heatmapPlot.py
 1)featureSelction()
 Reduce gene variables(gene features) and save 
