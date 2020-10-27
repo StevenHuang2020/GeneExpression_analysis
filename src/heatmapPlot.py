@@ -12,7 +12,7 @@ def heatMap(df):
     font = (6,6) #x font, y font
     visuz.gene_exp.hmap(df=df, dim=figSize, show=True, tickfont=font) #clus:False not show heirachical
     #visuz.gene_exp.hmap(df=df, dim=figSize, show=True, tickfont=font, rowclus=False,colclus=False)
-    visuz.gene_exp.hmap(df=df, dim=figSize, show=True, tickfont=font, rowclus=False)
+    #visuz.gene_exp.hmap(df=df, dim=figSize, show=True, tickfont=font, rowclus=False)
     visuz.gene_exp.hmap(df=df, dim=figSize, show=True, tickfont=font, colclus=False)
     
 def getHeatmapData():
@@ -88,7 +88,7 @@ def getFromFile(file):
     if 1: 
         labels = np.unique(df['Type'])
         #modify here to select number of differ type of samples 
-        selectDict={ '1':6, '2':10, '3':10, '4':10}
+        selectDict={ '1':0, '2':40, '3':0, '4':40}
         df = filterData(labels,df,selectDict)
     
     if 0:

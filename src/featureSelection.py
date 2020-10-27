@@ -25,7 +25,7 @@ def FeatureExtractChiSquare(X,Y, N=3):
     features = fit.transform(X)
     tt = round(time()-t, 4)
     print("run in %.2fs" % (tt), ' after chi square,features.shape = ',features.shape)
-    return features,Y
+    return features,Y,fit.scores_
 
 def FeatureExtract_RFE(X,Y,N=3):
     print("*" * 50, FeatureExtract_RFE.__name__)
@@ -62,7 +62,7 @@ def FeatureExtract_PCA(X,Y,N=3):
     print('singular_values_=',fit.singular_values_)
     
     print("run in %.2fs" % (tt), ' after PCA features.shape = ', features.shape)
-    return features, Y
+    return features, Y, fit.components_
 
 def FeatureExtract_ETC(X,Y):
     print("*" * 50, FeatureExtract_ETC.__name__)
@@ -74,7 +74,7 @@ def FeatureExtract_ETC(X,Y):
     features = t.transform(X)
     tt = round(time()-t, 4)
     print("run in %.2fs" % (tt), ' after ETC features.shape = ', features.shape)
-    return features, Y
+    return features, Y, model.feature_importances_
 
 def FeatureExtract_VT(X,Y,N=3):
     print("*" * 50, FeatureExtract_VT.__name__)
@@ -84,4 +84,4 @@ def FeatureExtract_VT(X,Y,N=3):
     tt = round(time()-t, 4)
     
     print("run in %.2fs" % (tt), ' after VT features.shape = ', features.shape)
-    return features, Y
+    return features, Y, None

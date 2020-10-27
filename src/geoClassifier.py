@@ -38,8 +38,8 @@ def preprocessingData(data):
     return data
     
 def featureSelect(X,y,N=30):
-    #return FeatureExtractChiSquare(X,y,N=N)
-    return FeatureExtract_RFE(X,y,N=N)
+    return FeatureExtractChiSquare(X,y,N=N)
+    #return FeatureExtract_RFE(X,y,N=N)
     # return FeatureExtract_ETC(X,y,N=N)
     #return pcaData(X,y,N=N)
 
@@ -200,15 +200,16 @@ def createModels():
 
 def confusionMatrix(clf,predictions, targets):
     def plotConfusionMatrix(matrix, classes=['1','2','3','4']):
+        plt.rcParams['savefig.dpi'] = 300
         df_cm = pd.DataFrame(matrix, index=classes, columns=classes)
         #fig = plt.figure(num=None, figsize=(10, 10), dpi=80, facecolor='w', edgecolor='k')
         
         plt.figure(figsize=(5, 4))
-        sn.set(font_scale=1)  # for label size
+        sn.set(font_scale=1)  # for label font size
         #sn.set_style('whitegrid')
         #sn.set_style("ticks", {"xtick.major.size": 8, "ytick.major.size": 8})
         cmap = sn.cubehelix_palette(light=1, as_cmap=True) #plt.cm.Greys plt.cm.Blues
-        sn.heatmap(df_cm, annot=True, linecolor='k', linewidths='.2', cmap=cmap, fmt='.20g', annot_kws={"size": 8})  # font size 
+        sn.heatmap(df_cm, annot=True, linecolor='k', linewidths='.2', cmap=cmap, fmt='.20g', annot_kws={"size": 12})  # font size 
         plt.show()
     
     print("*"*60, confusionMatrix.__name__)
@@ -228,7 +229,7 @@ def train():
         
         X, y = df.iloc[:, 1:-1].values, df.iloc[:, -1].values
         #X = pcaData(X,N=30) #PCA
-        X,y = featureSelect(X,y,N=30)
+        X,y,_ = featureSelect(X,y,N=30)
         X = preprocessingData(X) #scaler
     else:
         N=850
